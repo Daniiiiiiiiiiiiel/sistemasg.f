@@ -1,4 +1,4 @@
-const API = "https://web-production-f1ddf.up.railway.app";
+const API = "https://web-production-f78f05.up.railway.app";
 
 // ---------- AUTH ----------
 function checkAuth(rolReq) {
