@@ -3,7 +3,7 @@
 // ========================================
 
 const API_CONFIG = {
-    // ⚠️ ESTA ES LA ÚNICA URL QUE IMPORTA
+    // ✅ URL REAL DEL BACKEND EN RAILWAY
     baseURL: "https://web-production-f1ddf.up.railway.app"
 };
 
@@ -72,7 +72,7 @@ async function fetchWithAuth(endpoint, options = {}) {
 // ========================================
 
 async function login(username, password) {
-    const res = await fetch(`${API_CONFIG.baseURL}/login`, {
+    const res = await fetch(`${API_CONFIG.baseURL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
@@ -100,7 +100,7 @@ async function login(username, password) {
 // ========================================
 
 async function crearSolicitud(monto, motivo, fecha) {
-    await fetchWithAuth("/solicitudes", {
+    await fetchWithAuth("/api/solicitudes", {
         method: "POST",
         body: JSON.stringify({ monto, motivo, fecha })
     });
@@ -109,7 +109,7 @@ async function crearSolicitud(monto, motivo, fecha) {
 }
 
 async function obtenerMisSolicitudes() {
-    const res = await fetchWithAuth("/solicitudes");
+    const res = await fetchWithAuth("/api/solicitudes");
     return await res.json();
 }
 
@@ -118,19 +118,19 @@ async function obtenerMisSolicitudes() {
 // ========================================
 
 async function obtenerTodasLasSolicitudes() {
-    const res = await fetchWithAuth("/solicitudes");
+    const res = await fetchWithAuth("/api/solicitudes");
     return await res.json();
 }
 
 async function actualizarEstadoSolicitud(id, estado) {
-    await fetchWithAuth(`/solicitudes/${id}`, {
+    await fetchWithAuth(`/api/solicitudes/${id}`, {
         method: "PUT",
         body: JSON.stringify({ estado })
     });
 }
 
 async function crearUsuario(username, password, nombre, rol) {
-    await fetchWithAuth("/admin/usuarios", {
+    await fetchWithAuth("/api/admin/usuarios", {
         method: "POST",
         body: JSON.stringify({ username, password, nombre, rol })
     });
@@ -139,7 +139,7 @@ async function crearUsuario(username, password, nombre, rol) {
 }
 
 function descargarPDF() {
-    window.open(`${API_CONFIG.baseURL}/reportes/pdf`, "_blank");
+    window.open(`${API_CONFIG.baseURL}/api/reportes/pdf`, "_blank");
 }
 
 // ========================================
@@ -168,7 +168,7 @@ if ("serviceWorker" in navigator) {
 window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     window.deferredPrompt = e;
-    console.log("PWA lista para instalar");
+    console.log("📱 PWA lista para instalar");
 });
 
 // ========================================
