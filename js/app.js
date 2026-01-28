@@ -1,257 +1,178 @@
 // ========================================
-// CONFIGURACIÓN DE LA API
+// CONFIGURACIÓN GLOBAL
 // ========================================
+
 const API_CONFIG = {
-    // URL del Backend (Python)
-    // Cambia esto a la IP de tu servidor si pruebas en móvil
-    baseURL: 'http://localhost:5000/api'
+    // ⚠️ ESTA ES LA ÚNICA URL QUE IMPORTA
+    baseURL: "https://web-production-f1ddf.up.railway.app/api"
 };
 
 // ========================================
-// FUNCIONES DE AUTENTICACIÓN
+// UTILIDADES DE RUTA
 // ========================================
 
-/**
- * Verifica si el usuario está autenticado y tiene el rol correcto
- * @param {string} requiredRole - Rol requerido ('cliente' o 'admin')
- */
 function getBasePath() {
-    return window.location.pathname.includes('/pages/') ? '../' : '';
+    return window.location.pathname.includes("/pages/") ? "../" : "";
 }
 
-/**
- * Verifica si el usuario está autenticado y tiene el rol correcto
- * @param {string} requiredRole - Rol requerido ('cliente' o 'admin')
- */
-function checkAuth(requiredRole) {
-    const token = localStorage.getItem('token');
-    const rol = localStorage.getItem('rol');
+// ========================================
+// AUTENTICACIÓN
+// ========================================
+
+function checkAuth(requiredRole = null) {
+    const token = localStorage.getItem("token");
+    const rol = localStorage.getItem("rol");
     const basePath = getBasePath();
 
-    // Si no hay token, redirigir a login
     if (!token) {
-        window.location.href = basePath + 'index.html';
+        window.location.href = basePath + "index.html";
         return;
     }
 
-    // Si el rol no coincide, redirigir a la página correcta
     if (requiredRole && rol !== requiredRole) {
-        if (rol === 'admin') {
-            window.location.href = basePath + 'pages/admin.html';
-        } else {
-            window.location.href = basePath + 'pages/cliente.html';
-        }
-        return;
+        window.location.href =
+            rol === "admin"
+                ? basePath + "pages/admin.html"
+                : basePath + "pages/cliente.html";
     }
 }
 
-/**
- * Cierra sesión del usuario
- */
 function logout() {
-    if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('rol');
-        localStorage.removeItem('username');
-        window.location.href = getBasePath() + 'index.html';
-    }
+    localStorage.clear();
+    window.location.href = getBasePath() + "index.html";
 }
 
 // ========================================
-// FUNCIONES DE API
+// FETCH CON TOKEN
 // ========================================
 
-/**
- * Realiza una petición fetch con el token de autenticación
- * @param {string} url - URL del endpoint
- * @param {object} options - Opciones de fetch
- * @returns {Promise<Response>}
- */
-async function fetchWithAuth(url, options = {}) {
-    const token = localStorage.getItem('token');
+async function fetchWithAuth(endpoint, options = {}) {
+    const token = localStorage.getItem("token");
 
-    const defaultOptions = {
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
-    };
-
-    // Combinar opciones
-    const finalOptions = {
-        ...defaultOptions,
+    const response = await fetch(`${API_CONFIG.baseURL}${endpoint}`, {
         ...options,
         headers: {
-            ...defaultOptions.headers,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
             ...(options.headers || {})
         }
-    };
+    });
 
-    try {
-        const response = await fetch(url, finalOptions);
-
-        // Si el token expiró o es inválido, redirigir a login
-        if (response.status === 401 || response.status === 403) {
-            localStorage.clear();
-            window.location.href = getBasePath() + 'index.html';
-            throw new Error('Sesión expirada');
-        }
-
-        return response;
-
-    } catch (error) {
-        console.error('Error en petición:', error);
-        throw error;
+    if (response.status === 401 || response.status === 403) {
+        localStorage.clear();
+        window.location.href = getBasePath() + "index.html";
+        throw new Error("Sesión expirada");
     }
+
+    return response;
 }
 
 // ========================================
-// FUNCIONES DE UTILIDAD
+// LOGIN
 // ========================================
 
-/**
- * Formatea un número como moneda
- * @param {number} amount - Monto a formatear
- * @returns {string}
- */
+async function login(username, password) {
+    const res = await fetch(`${API_CONFIG.baseURL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    });
+
+    if (!res.ok) {
+        alert("Usuario o contraseña incorrectos");
+        return;
+    }
+
+    const data = await res.json();
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("rol", data.rol);
+    localStorage.setItem("nombre", data.nombre);
+
+    window.location.href =
+        data.rol === "admin"
+            ? "pages/admin.html"
+            : "pages/cliente.html";
+}
+
+// ========================================
+// SOLICITUDES (CLIENTE)
+// ========================================
+
+async function crearSolicitud(monto, motivo, fecha) {
+    await fetchWithAuth("/solicitudes", {
+        method: "POST",
+        body: JSON.stringify({ monto, motivo, fecha })
+    });
+
+    alert("Solicitud enviada correctamente");
+}
+
+async function obtenerMisSolicitudes() {
+    const res = await fetchWithAuth("/solicitudes");
+    return await res.json();
+}
+
+// ========================================
+// ADMIN
+// ========================================
+
+async function obtenerTodasLasSolicitudes() {
+    const res = await fetchWithAuth("/solicitudes");
+    return await res.json();
+}
+
+async function actualizarEstadoSolicitud(id, estado) {
+    await fetchWithAuth(`/solicitudes/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ estado })
+    });
+}
+
+async function crearUsuario(username, password, nombre, rol) {
+    await fetchWithAuth("/admin/usuarios", {
+        method: "POST",
+        body: JSON.stringify({ username, password, nombre, rol })
+    });
+
+    alert("Usuario creado correctamente");
+}
+
+function descargarPDF() {
+    window.open(`${API_CONFIG.baseURL}/reportes/pdf`, "_blank");
+}
+
+// ========================================
+// FORMATO
+// ========================================
+
 function formatMoney(amount) {
-    return new Intl.NumberFormat('es-MX', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+    return new Intl.NumberFormat("es-CR", {
+        style: "currency",
+        currency: "CRC"
     }).format(amount);
 }
 
-/**
- * Formatea una fecha al formato local
- * @param {string} dateString - Fecha en formato ISO
- * @returns {string}
- */
-function formatDate(dateString) {
-    if (!dateString) return '-';
-
-    const date = new Date(dateString);
-
-    // Verificar si la fecha es válida
-    if (isNaN(date.getTime())) return dateString;
-
-    return new Intl.DateTimeFormat('es-MX', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    }).format(date);
-}
-
-/**
- * Formatea una fecha y hora al formato local
- * @param {string} dateString - Fecha en formato ISO
- * @returns {string}
- */
-function formatDateTime(dateString) {
-    if (!dateString) return '-';
-
-    const date = new Date(dateString);
-
-    // Verificar si la fecha es válida
-    if (isNaN(date.getTime())) return dateString;
-
-    return new Intl.DateTimeFormat('es-MX', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    }).format(date);
-}
-
-/**
- * Muestra un mensaje de confirmación
- * @param {string} message - Mensaje a mostrar
- * @returns {boolean}
- */
-function confirm(message) {
-    return window.confirm(message);
-}
-
-/**
- * Muestra un mensaje de alerta
- * @param {string} message - Mensaje a mostrar
- */
-function alert(message) {
-    window.alert(message);
-}
-
-/**
- * Valida que una fecha sea válida y no esté en el pasado
- * @param {string} dateString - Fecha a validar
- * @returns {boolean}
- */
-function isValidFutureDate(dateString) {
-    const date = new Date(dateString);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return date >= today;
-}
-
-/**
- * Obtiene el mensaje de error apropiado para un código de estado HTTP
- * @param {number} status - Código de estado HTTP
- * @returns {string}
- */
-function getErrorMessage(status) {
-    const errorMessages = {
-        400: 'Solicitud inválida',
-        401: 'No autorizado',
-        403: 'Acceso denegado',
-        404: 'No encontrado',
-        500: 'Error del servidor',
-        503: 'Servicio no disponible'
-    };
-
-    return errorMessages[status] || 'Error desconocido';
+function formatDate(date) {
+    return new Intl.DateTimeFormat("es-CR").format(new Date(date));
 }
 
 // ========================================
-// MANEJADORES DE EVENTOS GLOBALES
+// PWA
 // ========================================
 
-// Prevenir que la página se recargue si pierde conexión
-window.addEventListener('online', () => {
-    console.log('Conexión restaurada');
-});
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js");
+}
 
-window.addEventListener('offline', () => {
-    console.log('Sin conexión a internet');
-});
-
-// Detectar cuando la app se instala como PWA
-window.addEventListener('beforeinstallprompt', (e) => {
-    console.log('PWA lista para instalar');
-    // Puedes guardar el evento para mostrarlo más tarde
+window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
     window.deferredPrompt = e;
-});
-
-window.addEventListener('appinstalled', () => {
-    console.log('PWA instalada exitosamente');
+    console.log("PWA lista para instalar");
 });
 
 // ========================================
-// INICIALIZACIÓN
+// INIT
 // ========================================
 
-// Verificar si estamos en la página de login
-const isLoginPage = window.location.pathname.includes('index.html') ||
-    window.location.pathname === '/';
-
-// Si no es la página de login y no hay token, redirigir
-if (!isLoginPage) {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        window.location.href = 'index.html';
-    }
-}
-
-// Logs de desarrollo (puedes comentar en producción)
-console.log('🚀 Sistema de Adelantos inicializado');
-console.log('📱 PWA:', 'serviceWorker' in navigator ? 'Soportado' : 'No soportado');
-console.log('🌐 API:', API_CONFIG.baseURL);
+console.log("✅ App conectada a:", API_CONFIG.baseURL);
