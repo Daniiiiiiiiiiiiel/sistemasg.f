@@ -4,7 +4,7 @@
 
 const API_CONFIG = {
     // ⚠️ ESTA ES LA ÚNICA URL QUE IMPORTA
-    baseURL: "https://web-production-f1ddf.up.railway.app/api"
+    baseURL: "https://web-production-f1ddf.up.railway.app"
 };
 
 // ========================================
