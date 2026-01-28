@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a2980">
     <title>Login</title>
+    <link rel="manifest" href="assets/manifest.json">
 </head>
+
 <body>
 
-<h2>Iniciar sesión</h2>
+    <h2>Iniciar sesión</h2>
 
-<input id="username" placeholder="Usuario">
-<br>
-<input id="password" type="password" placeholder="Contraseña">
-<br><br>
+    <input id="username" placeholder="Usuario">
+    <br>
+    <input id="password" type="password" placeholder="Contraseña">
+    <br><br>
 
-<button onclick="handleLogin()">Entrar</button>
+    <button onclick="handleLogin()">Entrar</button>
 
-<script src="app.js"></script>
-<script>
-function handleLogin() {
-    login(
-        document.getElementById("username").value,
-        document.getElementById("password").value
-    );
-}
-</script>
+    <script src="app.js"></script>
+    <script>
+        function handleLogin() {
+            login(
+                document.getElementById("username").value,
+                document.getElementById("password").value
+            );
+        }
+    </script>
 
 </body>
+
 </html>

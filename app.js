@@ -1,5 +1,11 @@
 const API = "https://web-production-f78f05.up.railway.app";
 
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js")
+        .then(() => console.log("Service Worker registrado"))
+        .catch(err => console.error("Fallo registro SW:", err));
+}
+
 // ---------- AUTH ----------
 function checkAuth(rolReq) {
     const token = localStorage.getItem("token");
