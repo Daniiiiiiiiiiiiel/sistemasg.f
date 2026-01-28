@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#1a2980">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4F46E5">
     <title>Cliente</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="manifest" href="../assets/manifest.json">
@@ -66,7 +66,12 @@
             const ul = document.getElementById("lista");
             ul.innerHTML = "";
             data.forEach(s => {
-                ul.innerHTML += `<li>${s.motivo} - ${s.estado}</li>`;
+                const statusClass = s.estado.toLowerCase();
+                ul.innerHTML += `
+                    <li>
+                        <span>${s.motivo} <br> <small style="color:#aaa">$${s.monto}</small></span>
+                        <span class="status ${statusClass}">${s.estado}</span>
+                    </li>`;
             });
         }
 
