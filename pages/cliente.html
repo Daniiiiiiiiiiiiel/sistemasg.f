@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel de empleado - Sistema de adelantos">
+    <meta name="theme-color" content="#1a2980">
+    <title>Panel Empleado - Sistema de Adelantos</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="../assets/manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="../assets/icon-192.png">
+    <link rel="apple-touch-icon" href="../assets/icon-192.png">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <img src="../assets/logo.png" alt="Sistema de Adelantos" class="logo-img">
+        <div class="user-info">
+            <span class="user-name" id="userName">Empleado</span>
+            <button class="btn btn-secondary btn-logout" id="logoutBtn">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+        <!-- Sección: Inicio / Dashboard -->
+        <section class="section" id="inicio" data-section="inicio">
+            <div class="section-header">
+                <div class="section-header-content">
+                    <span class="section-icon">🏠</span>
+                    <div>
+                        <h2 class="section-title-main">Bienvenido, <span id="welcomeName">Empleado</span></h2>
+                        <p class="section-desc">Panel de control y resumen</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen rápido -->
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="totalSolicitudes">0</div>
+                        <div class="stat-label">Solicitudes</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="pendientesSolicitudes">0</div>
+                        <div class="stat-label">Pendientes</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="aprobadasSolicitudes">0</div>
+                        <div class="stat-label">Aprobadas</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones rápidas -->
+            <div class="quick-actions">
+                <h3 class="section-subtitle">Acciones Rápidas</h3>
+                <div class="action-cards">
+                    <button class="action-card" onclick="document.querySelector('[data-nav=nueva-solicitud]').click()">
+                        <div class="action-icon">➕</div>
+                        <div class="action-text">
+                            <div class="action-title">Nueva Solicitud</div>
+                            <div class="action-desc">Crear adelanto</div>
+                        </div>
+                    </button>
+
+                    <button class="action-card" onclick="document.querySelector('[data-nav=solicitudes]').click()">
+                        <div class="action-icon">📊</div>
+                        <div class="action-text">
+                            <div class="action-title">Ver Solicitudes</div>
+                            <div class="action-desc">Historial completo</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección: Nueva Solicitud -->
+        <section class="section hidden" id="nueva-solicitud" data-section="nueva-solicitud">
+            <div class="section-header">
+                <div class="section-header-content">
+                    <span class="section-icon">➕</span>
+                    <div>
+                        <h2 class="section-title-main">Nueva Solicitud</h2>
+                        <p class="section-desc">Solicitar adelanto de nómina</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card form-card">
+                <form id="solicitudForm">
+                    <div class="form-group">
+                        <label for="monto">Monto ($)</label>
+                        <input type="number" id="monto" name="monto" min="1" step="0.01" placeholder="0.00" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fecha">Fecha Solicitada</label>
+                        <input type="date" id="fecha" name="fecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="motivo">Motivo</label>
+                        <input type="text" id="motivo" name="motivo" placeholder="Describe el motivo del adelanto"
+                            maxlength="200" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            Enviar Solicitud
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Sección: Mis Solicitudes -->
+        <section class="section hidden" id="solicitudes" data-section="solicitudes">
+            <div class="section-header">
+                <div class="section-header-content">
+                    <span class="section-icon">📋</span>
+                    <div>
+                        <h2 class="section-title-main">Mis Solicitudes</h2>
+                        <p class="section-desc">Historial de adelantos solicitados</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="solicitudesGrid" class="grid">
+                <!-- Las solicitudes se cargarán aquí dinámicamente -->
+            </div>
+
+            <div id="emptyState" class="empty-state hidden">
+                <div class="empty-state-icon">📋</div>
+                <p class="empty-state-text">No tienes solicitudes aún</p>
+            </div>
+        </section>
+
+        <!-- Sección: Perfil -->
+        <section class="section hidden" id="perfil" data-section="perfil">
+            <div class="section-header">
+                <div class="section-header-content">
+                    <span class="section-icon">👤</span>
+                    <div>
+                        <h2 class="section-title-main">Mi Perfil</h2>
+                        <p class="section-desc">Información de tu cuenta</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información Personal -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Información Personal</h3>
+                </div>
+                <div class="card-body">
+                    <div class="profile-grid">
+                        <div class="profile-item">
+                            <div class="profile-label">👤 Nombre Completo</div>
+                            <div class="profile-value" id="profileNameFull">-</div>
+                        </div>
+                        <div class="profile-item">
+                            <div class="profile-label">📧 Email</div>
+                            <div class="profile-value" id="profileEmail">-</div>
+                        </div>
+                        <div class="profile-item">
+                            <div class="profile-label">🏢 Departamento</div>
+                            <div class="profile-value" id="profileDepto">-</div>
+                        </div>
+                        <div class="profile-item">
+                            <div class="profile-label">💼 Puesto</div>
+                            <div class="profile-value" id="profilePuesto">-</div>
+                        </div>
+                        <div class="profile-item">
+                            <div class="profile-label">📅 Fecha de Ingreso</div>
+                            <div class="profile-value" id="profileFecha">-</div>
+                        </div>
+                        <div class="profile-item">
+                            <div class="profile-label">🔑 Rol en el Sistema</div>
+                            <div class="profile-value">
+                                <span class="badge badge-aprobado" id="profileRol">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen de Actividad -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Resumen de Actividad</h3>
+                </div>
+                <div class="card-body">
+                    <div class="activity-grid">
+                        <div class="activity-item">
+                            <span class="activity-icon">📋</span>
+                            <div class="activity-text">
+                                <div class="activity-value" id="activityTotal">0</div>
+                                <div class="activity-label">Total de Solicitudes</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-icon">💰</span>
+                            <div class="activity-text">
+                                <div class="activity-value">$0</div>
+                                <div class="activity-label">Monto Total Solicitado</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-icon">📅</span>
+                            <div class="activity-text">
+                                <div class="activity-value">-</div>
+                                <div class="activity-label">Última Solicitud</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones de Cuenta -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Configuración de Cuenta</h3>
+                </div>
+                <div class="card-body">
+                    <div class="account-actions">
+                        <button class="btn btn-outline" onclick="logout()">
+                            🚪 Cerrar Sesión
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAB - Floating Action Button -->
+        <button class="fab" id="fabNewRequest" title="Nueva solicitud">
+            <span>+</span>
+        </button>
+    </main>
+
+    <!-- Navegación Inferior -->
+    <nav class="bottom-nav">
+        <a href="#inicio" class="nav-item active" data-nav="inicio">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Inicio</span>
+        </a>
+        <a href="#nueva-solicitud" class="nav-item" data-nav="nueva-solicitud">
+            <span class="nav-icon">➕</span>
+            <span class="nav-label">Nueva</span>
+        </a>
+        <a href="#solicitudes" class="nav-item" data-nav="solicitudes">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">Solicitudes</span>
+        </a>
+        <a href="#perfil" class="nav-item" data-nav="perfil">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Perfil</span>
+        </a>
+    </nav>
+
+    <script src="../js/app.js"></script>
+
+    <script src="../js/app-ui.js"></script>
+    <script>
+        // Verificar autenticación
+        checkAuth('cliente');
+
+        // Obtener y mostrar nombre de usuario
+        const userName = localStorage.getItem('username');
+        if (userName) {
+            document.getElementById('userName').textContent = userName;
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // Cargar solicitudes al iniciar
+        loadSolicitudes();
+
+        // Manejar envío de nueva solicitud
+        const solicitudForm = document.getElementById('solicitudForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        solicitudForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                monto: parseFloat(document.getElementById('monto').value),
+                fecha: document.getElementById('fecha').value,
+                motivo: document.getElementById('motivo').value
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Enviando...';
+
+            try {
+                const response = await fetchWithAuth(`${API_CONFIG.baseURL}/solicitudes`, {
+                    method: 'POST',
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al crear la solicitud');
+                }
+
+                // Limpiar formulario
+                solicitudForm.reset();
+
+                // Recargar solicitudes
+                await loadSolicitudes();
+
+                alert('✅ Solicitud creada exitosamente');
+
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar Solicitud';
+            }
+        });
+
+        // Función para cargar solicitudes del empleado
+        async function loadSolicitudes() {
+            const grid = document.getElementById('solicitudesGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            try {
+                const response = await fetchWithAuth(`${API_CONFIG.baseURL}/solicitudes`);
+
+                if (!response.ok) {
+                    throw new Error('Error al cargar solicitudes');
+                }
+
+                const solicitudes = await response.json();
+
+                if (solicitudes.length === 0) {
+                    grid.innerHTML = '';
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+
+                emptyState.classList.add('hidden');
+
+                grid.innerHTML = solicitudes.map(sol => `
+          <div class="card slide-in">
+            <div class="card-header">
+              <h3 class="card-title">Solicitud #${sol.id}</h3>
+              <span class="badge badge-${sol.estado.toLowerCase()}">${sol.estado}</span>
+            </div>
+            <div class="card-body">
+              <div class="card-info">
+                <div class="info-row">
+                  <span class="info-label">Monto:</span>
+                  <span class="info-value amount">$${formatMoney(sol.monto)}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Fecha:</span>
+                  <span class="info-value">${formatDate(sol.fecha)}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Motivo:</span>
+                  <span class="info-value">${sol.motivo}</span>
+                </div>
+                ${sol.fecha_creacion ? `
+                <div class="info-row">
+                  <span class="info-label">Solicitado:</span>
+                  <span class="info-value">${formatDate(sol.fecha_creacion)}</span>
+                </div>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+            } catch (error) {
+                console.error('Error:', error);
+                grid.innerHTML = `
+          <div class="card">
+            <p style="color: var(--error);">Error al cargar las solicitudes</p>
+          </div>
+        `;
+            }
+        }
+    </script>
+</body>
+
+</html>
