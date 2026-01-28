@@ -3,365 +3,69 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Panel de administrador - Sistema de adelantos">
-  <meta name="theme-color" content="#1a2980">
-  <title>Panel Admin - Sistema de Adelantos</title>
-
-  <!-- PWA -->
-  <link rel="manifest" href="../assets/manifest.json">
-  <link rel="icon" type="image/png" sizes="192x192" href="../assets/icon-192.png">
-  <link rel="apple-touch-icon" href="../assets/icon-192.png">
-
-  <!-- Styles -->
-  <link rel="stylesheet" href="../css/styles.css">
+  <title>Admin</title>
 </head>
 
 <body>
-  <!-- Header -->
-  <header class="app-header">
-    <img src="../assets/logo.png" alt="Panel de Administrador" class="logo-img">
-    <div class="user-info">
-      <span class="user-name" id="userName">Administrador</span>
-      <button class="btn btn-secondary btn-logout" id="logoutBtn">Cerrar Sesión</button>
-    </div>
-  </header>
 
-  <!-- Contenido Principal -->
-  <main class="main-content">
-    <!-- Sección: Dashboard Admin -->
-    <section class="section" id="dashboard" data-section="dashboard">
-      <div class="section-header">
-        <div class="section-header-content">
-          <span class="section-icon">📊</span>
-          <div>
-            <h2 class="section-title-main">Panel de Administración</h2>
-            <p class="section-desc">Vista general del sistema</p>
-          </div>
-        </div>
-      </div>
+  <h2>Panel Admin</h2>
 
-      <!-- Estadísticas Admin -->
-      <div class="dashboard-stats">
-        <div class="stat-card">
-          <div class="stat-icon">📋</div>
-          <div class="stat-info">
-            <div class="stat-value" id="adminTotalSolicitudes">0</div>
-            <div class="stat-label">Total Solicitudes</div>
-          </div>
-        </div>
+  <button onclick="logout()">Cerrar sesión</button>
+  <button onclick="descargarPDF()">Descargar PDF</button>
 
-        <div class="stat-card">
-          <div class="stat-icon">⏳</div>
-          <div class="stat-info">
-            <div class="stat-value" id="adminPendientes">0</div>
-            <div class="stat-label">Pendientes</div>
-          </div>
-        </div>
+  <hr>
 
-        <div class="stat-card">
-          <div class="stat-icon">✅</div>
-          <div class="stat-info">
-            <div class="stat-value" id="adminAprobadas">0</div>
-            <div class="stat-label">Aprobadas</div>
-          </div>
-        </div>
+  <h3>Solicitudes</h3>
+  <ul id="lista"></ul>
 
-        <div class="stat-card">
-          <div class="stat-icon">💰</div>
-          <div class="stat-info">
-            <div class="stat-value" id="adminPagadas">0</div>
-            <div class="stat-label">Pagadas</div>
-          </div>
-        </div>
-      </div>
+  <hr>
 
-      <!-- Acciones rápidas Admin -->
-      <div class="quick-actions">
-        <h3 class="section-subtitle">Acciones Rápidas</h3>
-        <div class="action-cards">
-          <button class="action-card" onclick="document.querySelector('[data-nav=solicitudes]').click()">
-            <div class="action-icon">📝</div>
-            <div class="action-text">
-              <div class="action-title">Ver Solicitudes</div>
-              <div class="action-desc">Revisar pendientes</div>
-            </div>
-          </button>
+  <h3>Crear usuario</h3>
 
-          <button class="action-card" onclick="document.querySelector('[data-nav=reportes]').click()">
-            <div class="action-icon">📄</div>
-            <div class="action-text">
-              <div class="action-title">Generar Reporte</div>
-              <div class="action-desc">Exportar a PDF</div>
-            </div>
-          </button>
-        </div>
-      </div>
-    </section>
+  <input id="u" placeholder="Usuario">
+  <br>
+  <input id="p" placeholder="Password">
+  <br>
+  <input id="n" placeholder="Nombre">
+  <br>
+  <select id="r">
+    <option value="cliente">Cliente</option>
+    <option value="admin">Admin</option>
+  </select>
+  <br><br>
 
-    <!-- Sección: Solicitudes -->
-    <section class="section hidden" id="solicitudes" data-section="solicitudes">
-      <div class="section-header">
-        <div class="section-header-content">
-          <span class="section-icon">📋</span>
-          <div>
-            <h2 class="section-title-main">Gestión de Solicitudes</h2>
-            <p class="section-desc">Aprobar o rechazar solicitudes de adelanto</p>
-          </div>
-        </div>
-      </div>
+  <button onclick="crearUser()">Crear</button>
 
-      <div id="solicitudesGrid" class="grid">
-        <!-- Las solicitudes se cargarán aquí dinámicamente -->
-      </div>
-
-      <div id="emptyState" class="empty-state hidden">
-        <div class="empty-state-icon">📋</div>
-        <p class="empty-state-text">No hay solicitudes registradas</p>
-      </div>
-    </section>
-
-    <!-- Sección: Reportes -->
-    <section class="section hidden" id="reportes" data-section="reportes">
-      <div class="section-header">
-        <div class="section-header-content">
-          <span class="section-icon">📄</span>
-          <div>
-            <h2 class="section-title-main">Reportes</h2>
-            <p class="section-desc">Generar y descargar reportes en PDF</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Generar Reporte PDF</h3>
-        </div>
-        <div class="card-body">
-          <button class="btn btn-primary" onclick="generarReportePDF()">
-            📄 Descargar Reporte Completo
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Sección: Configuración -->
-    <section class="section hidden" id="configuracion" data-section="configuracion">
-      <div class="section-header">
-        <div class="section-header-content">
-          <span class="section-icon">⚙️</span>
-          <div>
-            <h2 class="section-title-main">Configuración</h2>
-            <p class="section-desc">Ajustes del sistema</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Opciones de Sistema</h3>
-        </div>
-        <div class="card-body">
-          <p style="color: var(--text-gray);">Configuración disponible próximamente</p>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Navegación Inferior -->
-  <nav class="bottom-nav">
-    <a href="#dashboard" class="nav-item active" data-nav="dashboard">
-      <span class="nav-icon">📊</span>
-      <span class="nav-label">Panel</span>
-    </a>
-    <a href="#solicitudes" class="nav-item" data-nav="solicitudes">
-      <span class="nav-icon">📋</span>
-      <span class="nav-label">Solicitudes</span>
-    </a>
-    <a href="#reportes" class="nav-item" data-nav="reportes">
-      <span class="nav-icon">📄</span>
-      <span class="nav-label">Reportes</span>
-    </a>
-    <a href="#configuracion" class="nav-item" data-nav="configuracion">
-      <span class="nav-icon">⚙️</span>
-      <span class="nav-label">Config</span>
-    </a>
-  </nav>
-
-  <script src="../js/app.js"></script>
-  <script src="../js/app-ui.js"></script>
-  <script src="../js/admin-ui.js"></script>
+  <script src="../app.js"></script>
   <script>
-    // Verificar autenticación de admin
-    checkAuth('admin');
+    checkAuth("admin");
 
-    // Obtener y mostrar nombre de usuario
-    const userName = localStorage.getItem('username');
-    if (userName) {
-      document.getElementById('userName').textContent = userName;
+    async function cargar() {
+      const data = await obtenerTodasLasSolicitudes();
+      const ul = document.getElementById("lista");
+      ul.innerHTML = "";
+      data.forEach(s => {
+        ul.innerHTML += `
+        <li>
+            ${s.motivo} - ${s.estado}
+            <button onclick="actualizarEstadoSolicitud(${s.id}, 'aprobado')">Aprobar</button>
+            <button onclick="actualizarEstadoSolicitud(${s.id}, 'rechazado')">Rechazar</button>
+        </li>`;
+      });
     }
 
-    // Logout
-    document.getElementById('logoutBtn').addEventListener('click', logout);
-
-    // Cargar solicitudes al iniciar
-    loadAllSolicitudes();
-
-    // Generar PDF
-    document.getElementById('generatePdfBtn').addEventListener('click', async () => {
-      const btn = document.getElementById('generatePdfBtn');
-      btn.disabled = true;
-      btn.innerHTML = '<span class="loading"></span> Generando...';
-
-      try {
-        const response = await fetchWithAuth(`${API_CONFIG.baseURL}/reportes/pdf`);
-
-        if (!response.ok) {
-          throw new Error('Error al generar PDF');
-        }
-
-        // Descargar el PDF
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `reporte-${new Date().toISOString().split('T')[0]}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-
-        alert('✅ PDF generado exitosamente');
-
-      } catch (error) {
-        alert('❌ Error: ' + error.message);
-      } finally {
-        btn.disabled = false;
-        btn.textContent = '📄 Generar PDF';
-      }
-    });
-
-    // Función para cargar TODAS las solicitudes
-    async function loadAllSolicitudes() {
-      const grid = document.getElementById('solicitudesGrid');
-      const emptyState = document.getElementById('emptyState');
-
-      try {
-        const response = await fetchWithAuth(`${API_CONFIG.baseURL}/solicitudes`);
-
-        if (!response.ok) {
-          throw new Error('Error al cargar solicitudes');
-        }
-
-        const solicitudes = await response.json();
-
-        if (solicitudes.length === 0) {
-          grid.innerHTML = '';
-          emptyState.classList.remove('hidden');
-          return;
-        }
-
-        emptyState.classList.add('hidden');
-
-        grid.innerHTML = solicitudes.map(sol => `
-          <div class="card slide-in">
-            <div class="card-header">
-              <div>
-                <h3 class="card-title">${sol.empleado_nombre || 'Empleado'}</h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
-                  Solicitud #${sol.id}
-                </p>
-              </div>
-              <span class="badge badge-${sol.estado.toLowerCase()}">${sol.estado}</span>
-            </div>
-            <div class="card-body">
-              <div class="card-info">
-                <div class="info-row">
-                  <span class="info-label">Monto:</span>
-                  <span class="info-value amount">$${formatMoney(sol.monto)}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Fecha:</span>
-                  <span class="info-value">${formatDate(sol.fecha)}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Motivo:</span>
-                  <span class="info-value">${sol.motivo}</span>
-                </div>
-                ${sol.fecha_creacion ? `
-                <div class="info-row">
-                  <span class="info-label">Solicitado:</span>
-                  <span class="info-value">${formatDate(sol.fecha_creacion)}</span>
-                </div>
-                ` : ''}
-              </div>
-              
-              ${sol.estado === 'pendiente' || sol.estado === 'aprobado' ? `
-              <div class="card-actions">
-                ${sol.estado === 'pendiente' ? `
-                  <button 
-                    class="btn btn-success" 
-                    onclick="cambiarEstado(${sol.id}, 'aprobado')"
-                  >
-                    ✓ Aprobar
-                  </button>
-                ` : ''}
-                ${sol.estado === 'aprobado' ? `
-                  <button 
-                    class="btn btn-warning" 
-                    onclick="cambiarEstado(${sol.id}, 'pagado')"
-                  >
-                    💰 Marcar Pagado
-                  </button>
-                ` : ''}
-              </div>
-              ` : ''}
-            </div>
-          </div>
-        `).join('');
-
-      } catch (error) {
-        console.error('Error:', error);
-        grid.innerHTML = `
-          <div class="card">
-            <p style="color: var(--error);">Error al cargar las solicitudes</p>
-          </div>
-        `;
-      }
+    async function crearUser() {
+      await crearUsuario(
+        document.getElementById("u").value,
+        document.getElementById("p").value,
+        document.getElementById("n").value,
+        document.getElementById("r").value
+      );
     }
 
-    // Función para cambiar estado de solicitud
-    async function cambiarEstado(id, nuevoEstado) {
-      if (!confirm(`¿Confirmar cambio de estado a "${nuevoEstado}"?`)) {
-        return;
-      }
-
-      try {
-        const response = await fetchWithAuth(
-          `${API_CONFIG.baseURL}/solicitudes/${id}`,
-          {
-            method: 'PUT',
-            body: JSON.stringify({ estado: nuevoEstado })
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error('Error al actualizar solicitud');
-        }
-
-        alert('✅ Estado actualizado exitosamente');
-
-        // Recargar solicitudes
-        await loadAllSolicitudes();
-
-      } catch (error) {
-        alert('❌ Error: ' + error.message);
-      }
-    }
-
-    // Hacer la función global para que sea accesible desde el HTML
-    window.cambiarEstado = cambiarEstado;
+    cargar();
   </script>
+
 </body>
 
 </html>
