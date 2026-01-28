@@ -6,38 +6,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1a2980">
   <title>Admin</title>
+  <link rel="stylesheet" href="../css/styles.css">
   <link rel="manifest" href="../assets/manifest.json">
 </head>
 
 <body>
 
-  <h2>Panel Admin</h2>
+  <header class="app-header">
+    <div class="user-info">
+      <h3>Panel Admin</h3>
+    </div>
+    <button class="btn btn-outline btn-logout" onclick="logout()">Salir</button>
+  </header>
 
-  <button onclick="logout()">Cerrar sesión</button>
-  <button onclick="descargarPDF()">Descargar PDF</button>
+  <main class="main-content">
+    <div class="container">
 
-  <hr>
+      <div class="section-header">
+        <div class="section-header-content">
+          <div class="section-title-main">Gestión</div>
+        </div>
+        <button class="btn btn-primary" onclick="descargarPDF()" style="margin-top: 1rem;">Descargar PDF</button>
+      </div>
 
-  <h3>Solicitudes</h3>
-  <ul id="lista"></ul>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Solicitudes Recientes</div>
+        </div>
+        <ul id="lista" class="list-group" style="list-style: none; padding: 0;"></ul>
+      </div>
 
-  <hr>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Crear Nuevo Usuario</div>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <input id="u" placeholder="Usuario">
+          </div>
+          <div class="form-group">
+            <input id="p" placeholder="Password" type="password">
+          </div>
+          <div class="form-group">
+            <input id="n" placeholder="Nombre Completo">
+          </div>
+          <div class="form-group">
+            <select id="r"
+              style="width: 100%; padding: 0.875rem; border-radius: 0.75rem; border: 2px solid var(--bg-gray);">
+              <option value="cliente">Cliente</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="crearUser()">Crear Usuario</button>
+        </div>
+      </div>
 
-  <h3>Crear usuario</h3>
-
-  <input id="u" placeholder="Usuario">
-  <br>
-  <input id="p" placeholder="Password">
-  <br>
-  <input id="n" placeholder="Nombre">
-  <br>
-  <select id="r">
-    <option value="cliente">Cliente</option>
-    <option value="admin">Admin</option>
-  </select>
-  <br><br>
-
-  <button onclick="crearUser()">Crear</button>
+    </div>
+  </main>
 
   <script src="../app.js"></script>
   <script>

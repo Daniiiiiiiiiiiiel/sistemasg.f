@@ -1,4 +1,4 @@
-const CACHE_NAME = "sistemaSG-v1";
+const CACHE_NAME = "sistemaSG-v4";
 
 const STATIC_ASSETS = [
   "index.html",

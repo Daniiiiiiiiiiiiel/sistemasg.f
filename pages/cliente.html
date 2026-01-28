@@ -6,30 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1a2980">
     <title>Cliente</title>
+    <link rel="stylesheet" href="../css/styles.css">
     <link rel="manifest" href="../assets/manifest.json">
 </head>
 
 <body>
 
-    <h2>Panel Cliente</h2>
+    <header class="app-header">
+        <div class="user-info">
+            <h3>Panel Cliente</h3>
+        </div>
+        <button class="btn btn-outline btn-logout" onclick="logout()">Salir</button>
+    </header>
 
-    <button onclick="logout()">Cerrar sesión</button>
+    <main class="main-content">
+        <div class="container">
 
-    <hr>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Nueva Solicitud</div>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Monto a solicitar</label>
+                        <input id="monto" type="number" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Motivo</label>
+                        <input id="motivo" placeholder="Ej: Emergencia médica">
+                    </div>
+                    <button class="btn btn-primary" onclick="crear()" style="width: 100%">Enviar Solicitud</button>
+                </div>
+            </div>
 
-    <h3>Nueva solicitud</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Mis Solicitudes</div>
+                </div>
+                <ul id="lista" style="list-style: none; padding: 0;"></ul>
+            </div>
 
-    <input id="monto" placeholder="Monto">
-    <br>
-    <input id="motivo" placeholder="Motivo">
-    <br><br>
-
-    <button onclick="crear()">Enviar solicitud</button>
-
-    <hr>
-
-    <h3>Mis solicitudes</h3>
-    <ul id="lista"></ul>
+        </div>
+    </main>
 
     <script src="../app.js"></script>
     <script>
