@@ -1,4 +1,4 @@
-const CACHE_NAME = "sistemaSG-v10";
+const CACHE_NAME = "sistemaSG-v11";
 
 const STATIC_ASSETS = [
   "index.html",
@@ -6,8 +6,8 @@ const STATIC_ASSETS = [
   "pages/admin.html",
   "css/styles.css",
   "app.js",
-  "assets/icon-192.png",
-  "assets/icon-512.png"
+  "manifest.json",
+  "assets/logo.png"
 ];
 
 // ============================
